@@ -4,5 +4,5 @@
   "uuid": "alwaysshowworkspacethumbnails@alynx.one",
   "url": "https://github.com/AlynxZhou/gnome-shell-extension-always-show-workspace-thumbnails/",
   "version": 3,
-  "shell-version": ["40", "41"]
+  "shell-version": ["40", "41", "42"]
 }
