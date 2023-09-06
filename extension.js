@@ -18,38 +18,35 @@
 
 /* exported init, enable, disable */
 
-const {ThumbnailsBox} = imports.ui.workspaceThumbnail;
+import { ThumbnailsBox } from "resource:///org/gnome/shell/ui/workspaceThumbnail.js";
 
-function init() {
-  // This extension does not use init function.
-}
-
-function enable() {
-  ThumbnailsBox.prototype._updateShouldShowOrig =
-    ThumbnailsBox.prototype._updateShouldShow;
-  // Just set true, so we can always show ThumbnailsBox.
-  ThumbnailsBox.prototype._updateShouldShow = function () {
-    /*
-    const { nWorkspaces } = global.workspace_manager;
-    const shouldShow = this._settings.get_boolean('dynamic-workspaces')
+export default class AlwaysShowWorkspaceThumbnails {
+  enable() {
+    ThumbnailsBox.prototype._updateShouldShowOrig =
+      ThumbnailsBox.prototype._updateShouldShow;
+    // Just set true, so we can always show ThumbnailsBox.
+    ThumbnailsBox.prototype._updateShouldShow = function () {
+      /*
+      const { nWorkspaces } = global.workspace_manager;
+      const shouldShow = this._settings.get_boolean('dynamic-workspaces')
       ? nWorkspaces > NUM_WORKSPACES_THRESHOLD
       : nWorkspaces > 1;
-    */
+      */
 
-    // if (this._shouldShow === shouldShow)
-    if (this._shouldShow === true)
-      return;
+      // if (this._shouldShow === shouldShow)
+      if (this._shouldShow === true) return;
 
-    // this._shouldShow = shouldShow;
-    this._shouldShow = true;
-    this.notify('should-show');
-  };
-}
+      // this._shouldShow = shouldShow;
+      this._shouldShow = true;
+      this.notify("should-show");
+    };
+  }
 
-function disable () {
-  if (ThumbnailsBox.prototype._updateShouldShowOrig instanceof Function) {
-    ThumbnailsBox.prototype._updateShouldShow =
-      ThumbnailsBox.prototype._updateShouldShowOrig;
-    ThumbnailsBox.prototype._updateShouldShowOrig = undefined;
+  disable() {
+    if (ThumbnailsBox.prototype._updateShouldShowOrig instanceof Function) {
+      ThumbnailsBox.prototype._updateShouldShow =
+        ThumbnailsBox.prototype._updateShouldShowOrig;
+      ThumbnailsBox.prototype._updateShouldShowOrig = undefined;
+    }
   }
 }
