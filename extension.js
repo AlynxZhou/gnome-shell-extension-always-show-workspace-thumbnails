@@ -16,37 +16,50 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-/* exported init, enable, disable */
-
-import { ThumbnailsBox } from "resource:///org/gnome/shell/ui/workspaceThumbnail.js";
+import {
+  ThumbnailsBox
+} from "resource:///org/gnome/shell/ui/workspaceThumbnail.js";
+import {
+  InjectionManager
+} from "resource:///org/gnome/shell/extensions/extension.js";
 
 export default class AlwaysShowWorkspaceThumbnails {
+  constructor() {
+    this._injectionManager = new InjectionManager();
+  }
+
   enable() {
-    ThumbnailsBox.prototype._updateShouldShowOrig =
-      ThumbnailsBox.prototype._updateShouldShow;
+    // NOTE: Don't use arrow expressions for the function used to inject, we
+    // want it to use the calling context, but arrow expressions will bind this
+    // extension object to it. Also the document is wrong, it says it will
+    // change `this` for you, but actually not.
+
     // Just set true, so we can always show ThumbnailsBox.
-    ThumbnailsBox.prototype._updateShouldShow = function () {
-      /*
-      const { nWorkspaces } = global.workspace_manager;
-      const shouldShow = this._settings.get_boolean('dynamic-workspaces')
-      ? nWorkspaces > NUM_WORKSPACES_THRESHOLD
-      : nWorkspaces > 1;
-      */
+    this._injectionManager.overrideMethod(
+      ThumbnailsBox.prototype,
+      "_updateShouldShow",
+      () => {
+        return function () {
+          const {nWorkspaces} = global.workspace_manager;
+          // AZ: If dynamic, don't check the number, always show it.
+          // const shouldShow = this._settings.get_boolean("dynamic-workspaces")
+          //   ? nWorkspaces > NUM_WORKSPACES_THRESHOLD
+          //   : nWorkspaces > 1;
+          const shouldShow = this._settings.get_boolean("dynamic-workspaces") ||
+                nWorkspaces > 1;
 
-      // if (this._shouldShow === shouldShow)
-      if (this._shouldShow === true) return;
+          if (this._shouldShow === shouldShow) {
+            return;
+          }
 
-      // this._shouldShow = shouldShow;
-      this._shouldShow = true;
-      this.notify("should-show");
-    };
+          this._shouldShow = shouldShow;
+          this.notify("should-show");
+        };
+      }
+    );
   }
 
   disable() {
-    if (ThumbnailsBox.prototype._updateShouldShowOrig instanceof Function) {
-      ThumbnailsBox.prototype._updateShouldShow =
-        ThumbnailsBox.prototype._updateShouldShowOrig;
-      ThumbnailsBox.prototype._updateShouldShowOrig = undefined;
-    }
+    this._injectionManager.clear();
   }
-}
+};
