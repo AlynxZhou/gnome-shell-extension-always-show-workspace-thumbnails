@@ -3,6 +3,6 @@
   "description": "Always show workspace thumbnails even there is only one workspace.",
   "uuid": "alwaysshowworkspacethumbnails@alynx.one",
   "url": "https://github.com/AlynxZhou/gnome-shell-extension-always-show-workspace-thumbnails/",
-  "version": 6,
-  "shell-version": ["45"]
+  "version": 7,
+  "shell-version": ["46"]
 }
