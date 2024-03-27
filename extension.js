@@ -25,7 +25,6 @@ import {
 
 export default class AlwaysShowWorkspaceThumbnails {
   constructor() {
-    this._injectionManager = new InjectionManager();
   }
 
   enable() {
@@ -33,6 +32,7 @@ export default class AlwaysShowWorkspaceThumbnails {
     // want it to use the calling context, but arrow expressions will bind this
     // extension object to it. Also the document is wrong, it says it will
     // change `this` for you, but actually not.
+    this._injectionManager = new InjectionManager();
 
     // Just set true, so we can always show ThumbnailsBox.
     this._injectionManager.overrideMethod(
@@ -60,6 +60,9 @@ export default class AlwaysShowWorkspaceThumbnails {
   }
 
   disable() {
-    this._injectionManager.clear();
+    if (this._injectionManager != null) {
+      this._injectionManager.clear();
+      this._injectionManager = null;
+    }
   }
 };
